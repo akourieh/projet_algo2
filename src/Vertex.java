@@ -1,11 +1,15 @@
 
 public class Vertex {
-    int number;
-    int degree;
+    private int number;
+    private int degree;
+    private int saturation;
+    private int color;
 
     Vertex(int number) {
         this.number = number;
         this.degree = 0;
+        this.saturation = 0;
+        this.color = -1;
     }
 
     public int number() {
@@ -16,6 +20,18 @@ public class Vertex {
         return degree;
     }
 
+    public int saturation() {
+        return saturation;
+    }
+
+    public int color() {
+        return color;
+    }
+
+    public void setColor(int c) {
+        color = c;
+    }
+
     public void addDegree() {
         degree++;
     }
@@ -24,4 +40,11 @@ public class Vertex {
         degree--;
     }
 
+    public void addSat() {
+        saturation++;
+    }
+
+    public void substractSat() {
+        saturation--;
+    }
 }

@@ -3,8 +3,8 @@ import java.util.*;
 public class Graph {
     private ArrayList<ArrayList<Vertex>> adj;
     private ArrayList<Vertex> vertices;
-    private int k;
     private int n;
+    private int k;
     private Vertex maxDegreeVertex;
 
     public Graph(int n) 
@@ -54,6 +54,11 @@ public class Graph {
         return n;
     }
 
+    public Vertex getVertex(int i) 
+    {
+        if (0 <= i <= n) return vertices.get(i);
+    }
+
     public Vertex maxDegree() 
     {
         return maxDegreeVertex;
@@ -70,17 +75,55 @@ public class Graph {
         }
     }
 
-    public static boolean iskDegenerate(int k)
+
+    public void DSatur() 
     {
+        ArrayList<Integer> colors = new ArrayList<>(k + 1);
+        for(int i = 0; i < (k+1); i++)
+        {
+            colors.add(i);
+        }
+        ArrayList<Vertex> alreadyColored = new ArrayList<>();
         
-        return true;
-    } 
+        Vertex maxSatVertex = maxDegreeVertex;
+        int currentColor = 0;
+        maxSatVertex.color = colors(currentColor);
+        alreadyColored.add(maxSatVertex);
 
-    public static int isDegenerate()
-    {
-        // should we try for all "k" possible knowing what is the max degree of the graph
-        return 0;
-    } 
+        int i = maxSatVertex.number();
+        while (alreadyColored.size() = n) 
+        {
+            currentColor = 0;
+            for(int j = 0; j < adj[i].size(); j++)
+            {
+                Vertex neighbor = adj.get(i).get(j);
+                int indNeighbor = adj.get(i).get(j).number();
+                for(int k = 0; k < adj[indNeighbor].size(); k++)
+                {
+                    if (!alreadyColored.contains(adj[indNeighbor][k]))
+                    {
+                        adj[indNeighbor][k].addSat();
+                    }
+                }
+                
+                if (neighbor.saturation > maxSatVertex.saturation)
+                {
+                    maxSatVertex = neighbor;
+                }
+            }
 
+            i = maxSatVertex.number();
 
+            for(int j = 0; j < adj[i].size(); j++)
+            {
+                if (adj[j][i].color >= currentColor) 
+                {
+                    currentColor++;
+                }
+            }
+
+            maxSatVertex.color = currentColor;
+            alreadyColored.add(maxSatVertex);
+        }
+    }
 }
