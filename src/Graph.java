@@ -1,4 +1,6 @@
 import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 public class Graph {
     private ArrayList<ArrayList<Vertex>> adj;
@@ -87,6 +89,7 @@ public class Graph {
 
         for (int i=1; i < n; i++)
         {
+
             for (int j = 0; j < adj.get(i).size(); j++) {
                 Vertex neighbor = adj.get(i).get(j);
                 if (neighbor.color() != -1) available[neighbor.color() ] = false;;
@@ -105,4 +108,20 @@ public class Graph {
         }
         System.out.println("Time elapsed (sec) = " + (System.currentTimeMillis() - startTime)/1000.0);
     }
+
+      //https://www.baeldung.com/reading-file-in-java
+      //https://stackoverflow.com/questions/38270388/reading-the-values-for-the-graph-from-text-file
+    public void loadGraph(String basename, int edges) throws Exception {
+       try {
+            Scanner file = new Scanner(new File(basename));
+            for(int i = 0; i < edges; i++) {
+                    System.out.println("Entered");
+
+                    int v1 = file.nextInt();
+                    int v2 = file.nextInt();
+                    addEdge(v1, v2);
+            }
+        } catch (FileNotFoundException e) {
+        }
+        }
 }
