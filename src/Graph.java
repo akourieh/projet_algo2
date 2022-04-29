@@ -8,7 +8,9 @@ public class Graph {
     private int n;
     private Vertex maxDegreeVertex;
     private int maxColor = 0;
-    private PriorityQueue<Vertex> pq;
+
+    private PriorityQueue<Vertex> maxHeap;              // le tas maximum des sommets selon leur niveau de saturation
+
 
 
 
@@ -18,18 +20,13 @@ public class Graph {
         this.maxDegreeVertex = new Vertex(0);
         this.vertices = new ArrayList<>();
         this.adj = new ArrayList<>();      // vecteur de vecteur des sommets adjacents a chaque sommet
-        this.pq = new PriorityQueue<>(
-                new Comparator<Vertex>(){
-                    @Override
-                    public int compare(Vertex v1,
-                                       Vertex v2)
-                    {
-                        if (v1.saturation() < v2.saturation()) return 1;
-                        else if (v1.saturation() > v2.saturation()) return -1;
-                        if (v1.degree() < v2.degree()) return 1;
-                        else if (v1.degree() > v2.degree()) return -1;
-                        return 0;
-                    }
+        this.maxHeap = new PriorityQueue<>(
+                (v1, v2) -> {
+                    if (v1.saturation() < v2.saturation()) return 1;
+                    else if (v1.saturation() > v2.saturation()) return -1;
+                    if (v1.degree() < v2.degree()) return 1;
+                    else if (v1.degree() > v2.degree()) return -1;
+                    return 0;
                 });
 
         for (int v = 0; v < n; v++) {
@@ -40,9 +37,8 @@ public class Graph {
             adj.add(new ArrayList<>());
         }
 
-
         for (int i = 0; i < n; i++) {
-            pq.add(vertices.get(i));
+            maxHeap.add(vertices.get(i));
         }
     }
 
@@ -53,7 +49,7 @@ public class Graph {
         vertices.get(v).addDegree();
         vertices.get(u).addDegree();
 
-        vertices.get(v).setSaturation(vertices.get(v).degree());
+        vertices.get(v).setSaturation(vertices.get(v).degree());        // pendant l'initialisation la saturation est la même que le degré puisque rien est encore colorié
         vertices.get(u).setSaturation(vertices.get(u).degree());
     }
 
@@ -92,37 +88,42 @@ public class Graph {
     public void coloring()
     {
 
-        boolean used[] = new boolean[n];
-        Arrays.fill(used, false);
-        int color = 0;
+        boolean[] isColoredUsed = new boolean[n];
+        Arrays.fill(isColoredUsed, false);
+        int color;                                         // la couleur à donner au sommet actuel
 
-        while (! pq.isEmpty())
+        while (! maxHeap.isEmpty())                      // tant que nous n'avons pas parcouru chaque sommet
         {
-            Vertex max = pq.poll();
-            pq.remove(max);
+            Vertex max = maxHeap.poll();                // peek rend le premier élément du tas, le maximum
+            maxHeap.remove(max);
             int maxInd = max.number();
 
+            // nous mettons a jour le vecteur booleen du sommet actuel
             for (int i = 0; i < adj.get(maxInd).size(); i++) {
                 if (adj.get(maxInd).get(i).color() != -1) {
-                    used[adj.get(maxInd).get(i).color()] = true;
+                    isColoredUsed[adj.get(maxInd).get(i).color()] = true;
                 }
             }
 
+            // choix de la première couleur disponible
             for (color = 0; color < n; color++) {
-                if (!used[color])
+                if (!isColoredUsed[color])
                     break;
             }
+
+            // nous remettons toutes les couleurs à fausse pour le prochain tour de bocule
             for (int i = 0; i < adj.get(maxInd).size(); i++) {
                 if (adj.get(maxInd).get(i).color() != -1) {
-                    used[adj.get(maxInd).get(i).color()] = false;
+                    isColoredUsed[adj.get(maxInd).get(i).color()] = false;
                 }
             }
-            max.setColor(color);
             if(color > maxColor) {
                 maxColor = color;
             }
-            for (int i = 0; i < adj.get(maxInd).size(); i++) {
-                adj.get(maxInd).get(i).substractSat();
+
+            max.setColor(color);                        // associer la bonne couleur au sommet actuel
+           for (int i = 0; i < adj.get(maxInd).size(); i++) {
+                adj.get(maxInd).get(i).substractSat();          // nous enlevons un niveau de saturation à tous les voisins du sommet dont nous venons de colorier
             }
         }
 
