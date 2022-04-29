@@ -4,22 +4,21 @@ public class Graph {
     private ArrayList<ArrayList<Vertex>> adj;
     private ArrayList<Vertex> vertices;
     private int n;
-    private int k;
     private Vertex maxDegreeVertex;
 
     public Graph(int n) 
     {
         this.n = n;                                         // # de sommets
         this.maxDegreeVertex = new Vertex(0);
-        this.vertices = new ArrayList<Vertex>();
-        this.adj = new ArrayList<ArrayList<Vertex>>();      // vecteur de vecteur des sommets adjacents a chaque sommet
+        this.vertices = new ArrayList<>();
+        this.adj = new ArrayList<>();      // vecteur de vecteur des sommets adjacents a chaque sommet
 
         for (int v = 0; v < n; v++) {
             vertices.add(new Vertex(v));
         }
 
         for (int v = 0; v < n; v++) {
-            adj.add(new ArrayList<Vertex>());
+            adj.add(new ArrayList<>());
         }
     }
 
@@ -27,12 +26,12 @@ public class Graph {
     {
         adj.get(u).add(vertices.get(v));
         adj.get(v).add(vertices.get(u));
-        n++;
         vertices.get(v).addDegree();
         vertices.get(u).addDegree();
 
         if (vertices.get(v).degree() > maxDegreeVertex.degree()) maxDegreeVertex = vertices.get(v);
         else if (vertices.get(u).degree() > maxDegreeVertex.degree()) maxDegreeVertex = vertices.get(u);
+        n();
     }
 
     public void removeVertex(int i)
@@ -49,15 +48,11 @@ public class Graph {
         n--;
     }
 
-    public int n() 
+    public int n()
     {
-        return n;
+        return vertices.size();
     }
 
-    public Vertex getVertex(int i) 
-    {
-        if (0 <= i <= n) return vertices.get(i);
-    }
 
     public Vertex maxDegree() 
     {
@@ -75,55 +70,39 @@ public class Graph {
         }
     }
 
-
-    public void DSatur() 
+    public void printColors()
     {
-        ArrayList<Integer> colors = new ArrayList<>(k + 1);
-        for(int i = 0; i < (k+1); i++)
-        {
-            colors.add(i);
+        for (Vertex vertex : vertices) {
+            System.out.print("\n Vertex " + vertex.number() + " of color : " + vertex.color());
         }
-        ArrayList<Vertex> alreadyColored = new ArrayList<>();
-        
-        Vertex maxSatVertex = maxDegreeVertex;
-        int currentColor = 0;
-        maxSatVertex.color = colors(currentColor);
-        alreadyColored.add(maxSatVertex);
+    }
 
-        int i = maxSatVertex.number();
-        while (alreadyColored.size() = n) 
+    public void coloring()
+    {
+        long startTime = System.currentTimeMillis();
+        vertices.get(0).setColor(0);
+
+        boolean available[] = new boolean[n];
+        Arrays.fill(available, true);
+
+        for (int i=1; i < n; i++)
         {
-            currentColor = 0;
-            for(int j = 0; j < adj[i].size(); j++)
-            {
+            for (int j = 0; j < adj.get(i).size(); j++) {
                 Vertex neighbor = adj.get(i).get(j);
-                int indNeighbor = adj.get(i).get(j).number();
-                for(int k = 0; k < adj[indNeighbor].size(); k++)
-                {
-                    if (!alreadyColored.contains(adj[indNeighbor][k]))
-                    {
-                        adj[indNeighbor][k].addSat();
-                    }
-                }
-                
-                if (neighbor.saturation > maxSatVertex.saturation)
-                {
-                    maxSatVertex = neighbor;
-                }
+                if (neighbor.color() != -1) available[neighbor.color() ] = false;;
             }
 
-            i = maxSatVertex.number();
-
-            for(int j = 0; j < adj[i].size(); j++)
+            int cr;
+            for (cr = 0; cr < n; cr++)
             {
-                if (adj[j][i].color >= currentColor) 
-                {
-                    currentColor++;
-                }
+                if (available[cr])
+                    break;
             }
 
-            maxSatVertex.color = currentColor;
-            alreadyColored.add(maxSatVertex);
+            vertices.get(i).setColor(cr);
+
+            Arrays.fill(available, true);
         }
+        System.out.println("Time elapsed (sec) = " + (System.currentTimeMillis() - startTime)/1000.0);
     }
 }

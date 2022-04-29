@@ -7,14 +7,15 @@ CLASSES = \
         Vertex.java \
         Main.java 
 
-default: 
-	classes
+build:
+	javac $(CLASSES)
 
-classes: 
-	$(CLASSES:.java=.class)
-
-run: 
+run:
 	java Main
 
-clean: 
+clean:
 	$(RM) *.class
+
+default: 
+	java Main
+

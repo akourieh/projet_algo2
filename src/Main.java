@@ -70,14 +70,9 @@ public class Main {
         g.addEdge(26, 27);
 
         g.addEdge(27, 28);
-        
-        g.printAdjacencyList();
 
-        // g.removeVertex(22);      // testing remove
-
-        // g.printAdjacencyList();
-
-        System.out.println("\n Highest degree in Graph is " + g.maxDegree().degree() + " of the Vertex number : " + g.maxDegree().number());
         System.out.println();
+        g.coloring();
+        //g.printColors();
     }
 }
