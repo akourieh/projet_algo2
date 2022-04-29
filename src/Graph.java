@@ -21,10 +21,13 @@ public class Graph {
         this.maxDegreeVertex = new Vertex(0);
         this.vertices = new ArrayList<>();
         this.adj = new ArrayList<>();      // vecteur de vecteur des sommets adjacents a chaque sommet
+        // fonction lambda afin de représenter la manière dont sera trié chaque élément au sein du tas
         this.maxHeap = new PriorityQueue<>(
                 (v1, v2) -> {
+                    // d'abord selon le niveau de saturation
                     if (v1.saturation() < v2.saturation()) return 1;
                     else if (v1.saturation() > v2.saturation()) return -1;
+                    // puis selon le degré
                     if (v1.degree() < v2.degree()) return 1;
                     else if (v1.degree() > v2.degree()) return -1;
                     return 0;
