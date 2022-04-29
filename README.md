@@ -63,4 +63,5 @@ non dirigé fourni par Stanford et introduire la commande suivante depuis le dos
 
 java -cp "bin:lib/" Main graphname.txt NoOfVertexes
 
-NoOfVertexes répresente le nombre de sommets du
+NoOfVertexes répresente le nombre de sommets du graphe
+Les sommets doivent etre separés par un espace ou par un tab
