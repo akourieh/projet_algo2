@@ -8,10 +8,10 @@ public class Main {
     {
         if (args.length != 3) {
             System.err.println("Usage: java Main filename nodes edges");
-			System.exit(1);
+            System.exit(1);
         }
 
-         Graph g = new Graph(Integer.parseInt(args[1]));
+        Graph g = new Graph(Integer.parseInt(args[1]));
 
         try {
             String file = args[0];

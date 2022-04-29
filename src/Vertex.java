@@ -32,6 +32,10 @@ public class Vertex {
         color = c;
     }
 
+    public void setSaturation(int s) {
+        saturation = s;
+    }
+
     public void addDegree() {
         degree++;
     }

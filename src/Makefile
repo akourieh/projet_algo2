@@ -5,6 +5,7 @@ JC = javac
 CLASSES = \
         Graph.java \
         Vertex.java \
+        KCore.java \
         Main.java 
 
 build:

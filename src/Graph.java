@@ -8,12 +8,29 @@ public class Graph {
     private int n;
     private Vertex maxDegreeVertex;
 
-    public Graph(int n) 
+    private PriorityQueue<Vertex> pq;
+
+
+
+    public Graph(int n)
     {
         this.n = n;                                         // # de sommets
         this.maxDegreeVertex = new Vertex(0);
         this.vertices = new ArrayList<>();
         this.adj = new ArrayList<>();      // vecteur de vecteur des sommets adjacents a chaque sommet
+        this.pq = new PriorityQueue<>(
+                new Comparator<Vertex>(){
+                    @Override
+                    public int compare(Vertex v1,
+                                       Vertex v2)
+                    {
+                        if (v1.saturation() < v2.saturation()) return 1;
+                        else if (v1.saturation() > v2.saturation()) return -1;
+                        if (v1.degree() < v2.degree()) return 1;
+                        else if (v1.degree() > v2.degree()) return -1;
+                        return 0;
+                    }
+                });
 
         for (int v = 0; v < n; v++) {
             vertices.add(new Vertex(v));
@@ -21,6 +38,11 @@ public class Graph {
 
         for (int v = 0; v < n; v++) {
             adj.add(new ArrayList<>());
+        }
+
+
+        for (int i = 0; i < n; i++) {
+            pq.add(vertices.get(i));
         }
     }
 
@@ -31,9 +53,8 @@ public class Graph {
         vertices.get(v).addDegree();
         vertices.get(u).addDegree();
 
-        if (vertices.get(v).degree() > maxDegreeVertex.degree()) maxDegreeVertex = vertices.get(v);
-        else if (vertices.get(u).degree() > maxDegreeVertex.degree()) maxDegreeVertex = vertices.get(u);
-        n();
+        vertices.get(v).setSaturation(vertices.get(v).degree());
+        vertices.get(u).setSaturation(vertices.get(u).degree());
     }
 
     public void removeVertex(int i)
@@ -48,17 +69,6 @@ public class Graph {
         vertices.remove(i);
         adj.remove(i);
         n--;
-    }
-
-    public int n()
-    {
-        return vertices.size();
-    }
-
-
-    public Vertex maxDegree() 
-    {
-        return maxDegreeVertex;
     }
 
     public void printAdjacencyList()
@@ -82,30 +92,40 @@ public class Graph {
     public void coloring()
     {
         long startTime = System.currentTimeMillis();
-        vertices.get(0).setColor(0);
 
-        boolean available[] = new boolean[n];
-        Arrays.fill(available, true);
+        boolean used[] = new boolean[n];
+        Arrays.fill(used, false);
+        int color;
 
-        for (int i=1; i < n; i++)
+        while (! pq.isEmpty())
         {
+            Vertex max = pq.poll();
+            pq.remove(max);
+            int maxInd = max.number();
 
-            for (int j = 0; j < adj.get(i).size(); j++) {
-                Vertex neighbor = adj.get(i).get(j);
-                if (neighbor.color() != -1) available[neighbor.color() ] = false;;
+            for (int i = 0; i < adj.get(maxInd).size(); i++) {
+                if (adj.get(maxInd).get(i).color() != -1) {
+                    used[adj.get(maxInd).get(i).color()] = true;
+                }
             }
 
-            int cr;
-            for (cr = 0; cr < n; cr++)
-            {
-                if (available[cr])
+            for (color = 0; color < n; color++) {
+                if (!used[color])
                     break;
             }
+            for (int i = 0; i < adj.get(maxInd).size(); i++) {
+                if (adj.get(maxInd).get(i).color() != -1) {
+                    used[adj.get(maxInd).get(i).color()] = false;
+                }
+            }
 
-            vertices.get(i).setColor(cr);
+            max.setColor(color);
 
-            Arrays.fill(available, true);
+            for (int i = 0; i < adj.get(maxInd).size(); i++) {
+                adj.get(maxInd).get(i).substractSat();
+            }
         }
+
         System.out.println("Time elapsed (sec) = " + (System.currentTimeMillis() - startTime)/1000.0);
     }
 
